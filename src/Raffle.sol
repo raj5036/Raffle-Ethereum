@@ -1,3 +1,24 @@
+// Layout of Contract:
+// version
+// imports
+// errors
+// interfaces, libraries, contracts
+// Type declarations
+// State variables
+// Events
+// Modifiers
+// Functions
+
+// Layout of Functions:
+// constructor
+// receive function (if exists)
+// fallback function (if exists)
+// external
+// public
+// internal
+// private
+// view & pure functions
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
@@ -74,7 +95,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 		emit RaffleEntered(msg.sender);
 	}
 
-	function checkUpkeep(bytes calldata /* checkData */) external override returns (
+	function checkUpkeep(bytes memory /* checkData */) public view override returns (
 		bool upkeepNeeded, 
 		bytes memory /* performData */
 	) {
@@ -89,7 +110,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 	}
 
 	function performUpkeep(bytes calldata /* performData */) external override {
-		(bool upKeepNeeded, ) = checkUpkeep(bytes(""));
+		(bool upKeepNeeded, ) = checkUpkeep("");
 
 		if (!upKeepNeeded) {
 			revert Raffle__UpkeepNotNeeded(address(this).balance, s_players.length, uint256(s_raffleState));
@@ -118,11 +139,11 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 			)
 		});
 
-		uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
+		s_vrfCoordinator.requestRandomWords(request);
 		s_lastTimeStamp = block.timestamp;
 	}
 
-	function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual override {
+	function fulfillRandomWords(uint256 /* requestId */, uint256[] calldata randomWords) internal virtual override {
 		// Checks
 		uint256 indexOfWinner = randomWords[0] % s_players.length;
 		address payable recentWinner = s_players[indexOfWinner];
@@ -145,5 +166,9 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 	// Getter Functions
 	function getEntranceFee() external view returns (uint256) {
 		return i_entranceFee;
+	}
+
+	function getRaffleState() external view returns(RaffleState) {
+		return s_raffleState;
 	}
 }
