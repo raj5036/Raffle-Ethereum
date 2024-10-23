@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import {Script} from "forge-std/Script.sol";
 import {Raffle} from "src/Raffle.sol";
 import {HelperConfig} from "script/HelperConfig.s.sol";
-import {CreateSubscription} from "script/Interactions.s.sol";
+import {CreateSubscription, FundSubscription, AddConsumer} from "script/Interactions.s.sol";
 
 contract RaffleScript is Script {
 	function run() public {}
@@ -24,7 +24,12 @@ contract RaffleScript is Script {
 			networkConfig.vrfCordinator = vrfCordinator;
 
 			// Fund the subscription
-			
+			FundSubscription fundSubscription = new FundSubscription();
+			fundSubscription.fundSubscription(
+				networkConfig.vrfCordinator,
+				networkConfig.subscriptionId,
+				networkConfig.link
+			);
 		}
 
 		// Local Chain => Deploy Mocks
@@ -41,6 +46,9 @@ contract RaffleScript is Script {
 		);
 
 		vm.stopBroadcast();
+
+		AddConsumer addConsumer = new AddConsumer();
+		addConsumer.addConsumer(address(raffle), networkConfig.vrfCordinator, networkConfig.subscriptionId);
 
 		return (raffle, helperConfig);
 	}
