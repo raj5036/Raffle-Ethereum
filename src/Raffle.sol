@@ -117,6 +117,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 		if (!upKeepNeeded) {
 			revert Raffle__UpkeepNotNeeded(address(this).balance, s_players.length, uint256(s_raffleState));
 		}
+		
 		pickWinner();
 	}
 
