@@ -211,7 +211,7 @@ contract RaffleTest is Test {
         VRFCoordinatorV2_5Mock(vrfCordinator).fulfillRandomWords(1, address(raffle));
     }
 
-	function testFulfillRandomWordsPicksAWinnerAndSendsMoney() public RaffleEnteredModifier {
+	function testFulfillRandomWordsPicksAWinnerAndSendsMoney() public RaffleEnteredModifier skipFork{
 		// Arrange
 		uint256 additionalEntrants = 3; // 4 total players
 		uint256 startingIndex = 1;
